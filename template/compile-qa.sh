@@ -27,12 +27,14 @@ printdivision
 # Compile server
 # 'source' command: Rather than forking a subshell, execute all commands
 # in the current shell.
-cd ../common
-	./compile-openephyra.sh
-	printdivision
-	source ./qa-compile-config.sh
-	printdivision
-cd ../template
+# cd ../common
+# 	./compile-openephyra.sh
+# 	printdivision
+# 	source ./qa-compile-config.sh
+# 	printdivision
+# cd ../template
+thrift=~/thrift-0.9.2
+JAVA_CLASS_PATH=$thrift/lib/java/build/libthrift-0.9.2.jar:$thrift/lib/java/build/lib/slf4j-api-1.5.8.jar:$thrift/lib/java/build/lib/slf4j-log4j12-1.5.8.jar:$thrift/lib/java/build/lib/log4j-1.2.14.jar
 
 # Use cp flag to avoid cluttering up the CLASSPATH environment variable
 echo -e "javac -cp $JAVA_CLASS_PATH QADaemon.java QAServiceHandler.java gen-java/qastubs/QAService.java\n\n"
