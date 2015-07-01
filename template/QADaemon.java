@@ -5,6 +5,7 @@ import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.server.TSimpleServer;
 import org.apache.thrift.server.TThreadPoolServer;
+import org.apache.thrift.TMultiplexedProcessor;
 import org.apache.thrift.transport.TSSLTransportFactory;
 import org.apache.thrift.transport.TSSLTransportFactory.TSSLTransportParameters;
 
@@ -22,13 +23,13 @@ public class QADaemon {
    */
   public static QAServiceHandler handler;
 
-  /**
-   * An object responsible for communication between the handler
-   * and the server. It decodes serialized data using the input protocol,
-   * delegates processing to the handler, and writes the response
-   * using the output protocol.
-   */
-  public static QAService.Processor<QAServiceHandler> processor;
+  // /**
+  //  * An object responsible for communication between the handler
+  //  * and the server. It decodes serialized data using the input protocol,
+  //  * delegates processing to the handler, and writes the response
+  //  * using the output protocol.
+  //  */
+  // public static QAService.Processor<QAServiceHandler> processor;
 
   /** 
    * Entry point for question-answer.
@@ -53,38 +54,24 @@ public class QADaemon {
       // that was originally specified in the thrift file.
       // When it's called, an OpenEphyra object is created.
       handler = new QAServiceHandler();
-      processor = new QAService.Processor<QAServiceHandler>(handler);
-      Runnable simple = new Runnable() {
-        // This is the code that the thread will run
-        public void run() {
-          simple(processor, port);
-        }
-      };
-      // Let system schedule the thread
-      new Thread(simple).start();
+
+      // processor = new QAService.Processor<QAServiceHandler>(handler);
+      TMultiplexedProcessor processor = new TMultiplexedProcessor();
+      processor.registerProcessor("test", new QAService.Processor(handler));
+
+      try {
+        // Start the question-answer server
+        TServerTransport serverTransport = new TServerSocket(port);
+        TServer server = new TSimpleServer(processor, serverTransport);
+        System.out.println("Starting the question-answer server at port " + port + "...");
+        server.serve();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      
     } catch (Exception x) {
       x.printStackTrace();
     }
   }
 
-  /**
-   * Listens for requests and forwards request information
-   * to handler.
-   * @param processor the thrift processor that will handle serialization
-   * and communication with the handler once a request is received.
-   * @param port the port at which the question-answer service will listen.
-   */
-  public static void simple(QAService.Processor processor, int port) {
-    try {
-      // Start the question-answer server
-      TServerTransport serverTransport = new TServerSocket(port);
-      TServer server = new TSimpleServer(
-          new Args(serverTransport).processor(processor));
-      System.out.println("Starting the question-answer server at port "
-          + port + "...");
-      server.serve();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
 }
