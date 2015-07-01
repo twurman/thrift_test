@@ -49,15 +49,9 @@ public class QADaemon {
       // Inner classes receive copies of local variables to work with.
       // Local vars must not change to ensure that inner classes are synced.
       final int port = tmp_port;
-      
-      // The handler implements the generated java interface
-      // that was originally specified in the thrift file.
-      // When it's called, an OpenEphyra object is created.
-      handler = new QAServiceHandler();
 
-      // processor = new QAService.Processor<QAServiceHandler>(handler);
-      TMultiplexedProcessor processor = new TMultiplexedProcessor();
-      processor.registerProcessor("test", new QAService.Processor(handler));
+      handler = new QAServiceHandler();
+      processor = new QAService.Processor<QAServiceHandler>(handler);
 
       try {
         // Start the question-answer server
