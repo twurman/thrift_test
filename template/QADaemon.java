@@ -62,7 +62,8 @@ public class QADaemon {
       try {
         // Start the question-answer server
         TServerTransport serverTransport = new TServerSocket(port);
-        TSimpleServer server = new TSimpleServer(processor, serverTransport);
+        TServer server = new TSimpleServer(
+            new Args(serverTransport).processor(processor));
         System.out.println("Starting the question-answer server at port " + port + "...");
         server.serve();
       } catch (Exception e) {
