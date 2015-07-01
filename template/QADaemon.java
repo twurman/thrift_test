@@ -51,7 +51,7 @@ public class QADaemon {
       final int port = tmp_port;
 
       handler = new QAServiceHandler();
-      processor = new QAService.Processor<QAServiceHandler>(handler);
+      TProcessor processor = new QAService.Processor<QAServiceHandler>(handler);
 
       try {
         // Start the question-answer server
