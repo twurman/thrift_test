@@ -38,4 +38,4 @@ JAVA_CLASS_PATH=$thrift/lib/java/build/libthrift-0.9.2.jar:$thrift/lib/java/buil
 
 # Use cp flag to avoid cluttering up the CLASSPATH environment variable
 echo -e "javac -cp $JAVA_CLASS_PATH QADaemon.java QAServiceHandler.java gen-java/qastubs/QAService.java\n\n"
-javac -cp $JAVA_CLASS_PATH -Xlint:unchecked QADaemon.java QAServiceHandler.java gen-java/qastubs/QAService.java
+javac -cp $JAVA_CLASS_PATH -Xlint:unchecked -Xlint:deprecation QADaemon.java QAServiceHandler.java gen-java/qastubs/QAService.java
