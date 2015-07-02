@@ -7,7 +7,7 @@
 # Add my classes to class path
 # (These class paths are only necessary when running the program.)
 thrift=~/thrift-0.9.2
-JAVA_CLASS_PATH=$thrift/lib/java/build/libthrift-0.9.2.jar:$thrift/lib/java/build/lib/slf4j-api-1.5.8.jar:$thrift/lib/java/build/lib/slf4j-log4j12-1.5.8.jar:$thrift/lib/java/build/lib/log4j-1.2.14.jar
+JAVA_CLASS_PATH=$thrift/lib/java/build/libthrift-0.9.2.jar:$thrift/lib/java/build/lib/slf4j-api-1.5.8.jar:$thrift/lib/java/build/lib/slf4j-log4j12-1.5.8.jar:$thrift/lib/java/build/lib/log4j-1.2.14.jar:httpcomponents-core/lib/httpcore-4.4.1.jar
 
 export JAVA_CLASS_PATH=$JAVA_CLASS_PATH:`pwd`:`pwd`/gen-java
 
@@ -16,6 +16,12 @@ export JAVA_CLASS_PATH=$JAVA_CLASS_PATH:`pwd`:`pwd`/gen-java
 # cd ../common
 # 	source ./qa-runtime-config.sh
 # NOTE: this script starts in ../common/question-answer
+if [ "$2" != "-simple" ]; then
+  java -cp $JAVA_CLASS_PATH -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m QADaemonSimple $1
+fi
+if [ "$2" != "-simple" ]; then
+	java -cp $JAVA_CLASS_PATH -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m QADaemon $1
+fi
 
 # Use cp flag to avoid cluttering up the CLASSPATH environment variable
-java -cp $JAVA_CLASS_PATH -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m QADaemon $1
+

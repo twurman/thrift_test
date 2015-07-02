@@ -16,12 +16,7 @@ printdivision()
 # Generate thrift files
 echo -e "./compile-qa.sh: `pwd`"
 echo -e "./compile-qa.sh: Compiling thrift source code..."
-thrift --gen java --gen cpp qaservice.thrift
-printdivision
-
-# Compile client
-echo -e "./compile-qa.sh: Making QA client..."
-make
+thrift --gen java qaservice.thrift
 printdivision
 
 thrift=~/thrift-0.9.2
@@ -30,4 +25,7 @@ JAVA_CLASS_PATH=$thrift/lib/java/build/libthrift-0.9.2.jar:$thrift/lib/java/buil
 # Use cp flag to avoid cluttering up the CLASSPATH environment variable
 echo -e "javac -cp $JAVA_CLASS_PATH QADaemon.java QAServiceHandler.java gen-java/qastubs/QAService.java\n\n"
 javac -cp $JAVA_CLASS_PATH -Xlint:unchecked -Xlint:deprecation QADaemon.java QAServiceHandler.java gen-java/qastubs/QAService.java
+
+printdivision
+echo -e "javac -cp $JAVA_CLASS_PATH QADaemonSimple.java QAServiceHandler.java gen-java/qastubs/QAService.java\n\n"
 javac -cp $JAVA_CLASS_PATH QADaemonSimple.java QAServiceHandler.java gen-java/qastubs/QAService.java
