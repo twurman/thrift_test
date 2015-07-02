@@ -66,25 +66,26 @@ public class QADaemon {
       System.out.println("Using default port: " + port);
     }
 
-    serversocket = new ServerSocket(port);
-    params = new BasicHttpParams();
-    params.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 1000).setIntParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE, 8 * 1024)
-            .setBooleanParameter(CoreConnectionPNames.STALE_CONNECTION_CHECK, false).setBooleanParameter(CoreConnectionPNames.TCP_NODELAY, true)
-            .setParameter(CoreProtocolPNames.ORIGIN_SERVER, "HttpComponents/1.1");
-
-    // Set up the HTTP protocol processor
-    HttpProcessor httpproc = new BasicHttpProcessor();
-
-    // Set up request handlers
-    HttpRequestHandlerRegistry reqistry = new HttpRequestHandlerRegistry();
-    reqistry.register("*", new HttpReqHandler());
-
-    // Set up the HTTP service
-    httpService = new HttpService(httpproc, new NoConnectionReuseStrategy(), new DefaultHttpResponseFactory());
-    httpService.setParams(params);
-    httpService.setHandlerResolver(reqistry);
-
     try {
+        serversocket = new ServerSocket(port);
+        params = new BasicHttpParams();
+        params.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 1000).setIntParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE, 8 * 1024)
+                .setBooleanParameter(CoreConnectionPNames.STALE_CONNECTION_CHECK, false).setBooleanParameter(CoreConnectionPNames.TCP_NODELAY, true)
+                .setParameter(CoreProtocolPNames.ORIGIN_SERVER, "HttpComponents/1.1");
+
+        // Set up the HTTP protocol processor
+        HttpProcessor httpproc = new BasicHttpProcessor();
+
+        // Set up request handlers
+        HttpRequestHandlerRegistry reqistry = new HttpRequestHandlerRegistry();
+        reqistry.register("*", new HttpReqHandler());
+
+        // Set up the HTTP service
+        httpService = new HttpService(httpproc, new NoConnectionReuseStrategy(), new DefaultHttpResponseFactory());
+        httpService.setParams(params);
+        httpService.setHandlerResolver(reqistry);
+
+    
         // Set up HTTP connection
         Socket socket = serversocket.accept();
         DefaultHttpServerConnection conn = new DefaultHttpServerConnection();
