@@ -86,16 +86,19 @@ public class QADaemon {
         httpService.setHandlerResolver(reqistry);
 
     
-        // Set up HTTP connection
-        Socket socket = serversocket.accept();
-        DefaultHttpServerConnection conn = new DefaultHttpServerConnection();
-        System.out.println("Incoming connection from " + socket.getInetAddress());
-        conn.bind(socket, params);
+        while(true) {
+          // Set up HTTP connection
+          Socket socket = serversocket.accept();
+          DefaultHttpServerConnection conn = new DefaultHttpServerConnection();
+          System.out.println("Incoming connection from " + socket.getInetAddress());
+          conn.bind(socket, params);
 
-        // Start worker thread
-        Thread t = new WorkerThread(httpService, conn);
-        t.setDaemon(true);
-        t.start();
+          // Start worker thread
+          Thread t = new WorkerThread(httpService, conn);
+          t.setDaemon(true);
+          t.start();
+        }
+        
     } catch (InterruptedIOException ex) {
         return;
     } catch (IOException e) {
@@ -144,7 +147,7 @@ public class QADaemon {
       
       private String thriftRequest(byte[] input){
           try{
-          
+              System.out.println("Thrift request");
               //Input
               TMemoryBuffer inbuffer = new TMemoryBuffer(input.length);           
               inbuffer.write(input);              
@@ -186,6 +189,7 @@ public class QADaemon {
             HttpContext context = new BasicHttpContext(null);
             try {
                 while (!Thread.interrupted() && this.conn.isOpen()) {
+                    System.out.println("handling request");
                     this.httpservice.handleRequest(this.conn, context);
                 }
             } catch (ConnectionClosedException ex) {
