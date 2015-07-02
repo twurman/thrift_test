@@ -53,9 +53,9 @@ public class QADaemon {
 
   // Note: all classes in the same directory are automatically imported
   public static QAServiceHandler handler;
-  private ServerSocket serversocket;
-  private HttpParams params;
-  private HttpService httpService;
+  private static ServerSocket serversocket;
+  private static HttpParams params;
+  private static HttpService httpService;
 
   public static void main(String [] args) {
     int port = 9091;
