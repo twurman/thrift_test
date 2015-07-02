@@ -16,11 +16,11 @@ export JAVA_CLASS_PATH=$JAVA_CLASS_PATH:`pwd`:`pwd`/gen-java
 # cd ../common
 # 	source ./qa-runtime-config.sh
 # NOTE: this script starts in ../common/question-answer
-if [ "$2" != "-simple" ]; then
+if [ "$2" == "-simple" ]; then
 	echo "starting simple server"
 	java -cp $JAVA_CLASS_PATH -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m QADaemonSimple $1
 fi
-if [ "$2" != "-http" ]; then
+if [ "$2" == "-http" ]; then
 	echo "starting http server"
 	java -cp $JAVA_CLASS_PATH -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m QADaemon $1
 fi
