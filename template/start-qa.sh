@@ -19,7 +19,7 @@ export JAVA_CLASS_PATH=$JAVA_CLASS_PATH:`pwd`:`pwd`/gen-java
 if [ "$2" != "-simple" ]; then
   java -cp $JAVA_CLASS_PATH -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m QADaemonSimple $1
 fi
-if [ "$2" != "-simple" ]; then
+if [ "$2" != "-http" ]; then
 	java -cp $JAVA_CLASS_PATH -Djava.library.path=lib/search/ -server -Xms1024m -Xmx2048m QADaemon $1
 fi
 
