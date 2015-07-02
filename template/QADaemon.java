@@ -1,72 +1,206 @@
-// Thrift java libraries 
-import org.apache.thrift.server.TServer;
-import org.apache.thrift.server.TServer.Args;
-import org.apache.thrift.transport.TServerSocket;
-import org.apache.thrift.transport.TServerTransport;
-import org.apache.thrift.server.TSimpleServer;
-import org.apache.thrift.server.TThreadPoolServer;
-import org.apache.thrift.TMultiplexedProcessor;
-import org.apache.thrift.transport.TSSLTransportFactory;
-import org.apache.thrift.transport.TSSLTransportFactory.TSSLTransportParameters;
+import java.io.File;
+import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.URLDecoder;
+import java.util.Locale;
+
+import org.apache.http.ConnectionClosedException;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpException;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpServerConnection;
+import org.apache.http.HttpStatus;
+import org.apache.http.MethodNotSupportedException;
+import org.apache.http.entity.ContentProducer;
+import org.apache.http.entity.EntityTemplate;
+import org.apache.http.entity.FileEntity;
+import org.apache.http.impl.DefaultHttpResponseFactory;
+import org.apache.http.impl.DefaultHttpServerConnection;
+import org.apache.http.impl.NoConnectionReuseStrategy;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.BasicHttpProcessor;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.HttpProcessor;
+import org.apache.http.protocol.HttpRequestHandler;
+import org.apache.http.protocol.HttpRequestHandlerRegistry;
+import org.apache.http.protocol.HttpService;
+import org.apache.http.util.EntityUtils;
+import org.apache.thrift.TProcessor;
+import org.apache.thrift.protocol.TJSONProtocol;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TMemoryBuffer;
 
 // Generated code
 import qastubs.QAService;
+
+//utils
+import java.util.HashMap;
 
 /**
  * Starts the question-answer server and listens for requests.
  */
 public class QADaemon {
+
   // Note: all classes in the same directory are automatically imported
-  /** 
-   * An object whose methods are implementations of the question-answer thrift
-   * interface.
-   */
   public static QAServiceHandler handler;
+  private final ServerSocket serversocket;
+  private final HttpParams params;
+  private final HttpService httpService;
 
-  // /**
-  //  * An object responsible for communication between the handler
-  //  * and the server. It decodes serialized data using the input protocol,
-  //  * delegates processing to the handler, and writes the response
-  //  * using the output protocol.
-  //  */
-  // public static QAService.Processor<QAServiceHandler> processor;
-
-  /** 
-   * Entry point for question-answer.
-   * @param args the argument list. Provide the port number
-   * as the first and only argument.
-   */
   public static void main(String [] args) {
+    int port = 9091;
+    if (args.length == 1) {
+      port = Integer.parseInt(args[0].trim());
+      System.out.println("Using port: " + port);
+    } else {
+      System.out.println("Using default port: " + port);
+    }
+
+    this.serversocket = new ServerSocket(port);
+    this.params = new BasicHttpParams();
+    this.params.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 1000).setIntParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE, 8 * 1024)
+            .setBooleanParameter(CoreConnectionPNames.STALE_CONNECTION_CHECK, false).setBooleanParameter(CoreConnectionPNames.TCP_NODELAY, true)
+            .setParameter(CoreProtocolPNames.ORIGIN_SERVER, "HttpComponents/1.1");
+
+    // Set up the HTTP protocol processor
+    HttpProcessor httpproc = new BasicHttpProcessor();
+
+    // Set up request handlers
+    HttpRequestHandlerRegistry reqistry = new HttpRequestHandlerRegistry();
+    reqistry.register("*", new HttpReqHandler());
+
+    // Set up the HTTP service
+    this.httpService = new HttpService(httpproc, new NoConnectionReuseStrategy(), new DefaultHttpResponseFactory());
+    this.httpService.setParams(this.params);
+    this.httpService.setHandlerResolver(reqistry);
+
     try {
-      int tmp_port = 9091;
-      if (args.length == 1) {
-        tmp_port = Integer.parseInt(args[0].trim());
-        System.out.println("Using port: " + tmp_port);
-      } else {
-        System.out.println("Using default port: " + tmp_port);
+        // Set up HTTP connection
+        Socket socket = this.serversocket.accept();
+        DefaultHttpServerConnection conn = new DefaultHttpServerConnection();
+        System.out.println("Incoming connection from " + socket.getInetAddress());
+        conn.bind(socket, this.params);
+
+        // Start worker thread
+        Thread t = new WorkerThread(this.httpService, conn);
+        t.setDaemon(true);
+        t.start();
+    } catch (InterruptedIOException ex) {
+        break;
+    } catch (IOException e) {
+        System.err.println("I/O error initialising connection thread: " + e.getMessage());
+        break;
+    }
+
+  }
+
+  static class HttpReqHandler implements HttpRequestHandler {
+
+      public HttpReqHandler() {
+          super();
       }
 
-      // Inner classes receive copies of local variables to work with.
-      // Local vars must not change to ensure that inner classes are synced.
-      final int port = tmp_port;
+      public void handle(final HttpRequest request, final HttpResponse response, final HttpContext context) throws HttpException, IOException {
 
-      handler = new QAServiceHandler();
-      TProcessor processor = new QAService.Processor<QAServiceHandler>(handler);
+          String method = request.getRequestLine().getMethod().toUpperCase(Locale.ENGLISH);
+          if (!method.equals("GET") && !method.equals("HEAD") && !method.equals("POST")) {
+              throw new MethodNotSupportedException(method + " method not supported");
+          }
+          String target = request.getRequestLine().getUri();
 
-      try {
-        // Start the question-answer server
-        TServerTransport serverTransport = new TServerSocket(port);
-        TServer server = new TSimpleServer(
-            new Args(serverTransport).processor(processor));
-        System.out.println("Starting the question-answer server at port " + port + "...");
-        server.serve();
-      } catch (Exception e) {
-        e.printStackTrace();
+          if (request instanceof HttpEntityEnclosingRequest && target.equals("/test")) {
+              HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
+              byte[] entityContent = EntityUtils.toByteArray(entity);
+              System.out.println("Incoming content: " + new String(entityContent));
+              
+              final String output = this.thriftRequest(entityContent);
+              
+              System.out.println("Outgoing content: "+output);
+              
+              EntityTemplate body = new EntityTemplate(new ContentProducer() {
+
+                  public void writeTo(final OutputStream outstream) throws IOException {
+                      OutputStreamWriter writer = new OutputStreamWriter(outstream, "UTF-8");
+                      writer.write(output);
+                      writer.flush();
+                  }
+
+              });
+              body.setContentType("text/html; charset=UTF-8");
+              response.setEntity(body);
+          }
       }
       
-    } catch (Exception x) {
-      x.printStackTrace();
+      private String thriftRequest(byte[] input){
+          try{
+          
+              //Input
+              TMemoryBuffer inbuffer = new TMemoryBuffer(input.length);           
+              inbuffer.write(input);              
+              TProtocol  inprotocol   = new TJSONProtocol(inbuffer);                   
+              
+              //Output
+              TMemoryBuffer outbuffer = new TMemoryBuffer(100);           
+              TProtocol outprotocol   = new TJSONProtocol(outbuffer);
+              
+              TProcessor processor = new QAService.Processor(new QAServiceHandler());      
+              processor.process(inprotocol, outprotocol);
+              
+              byte[] output = new byte[outbuffer.length()];
+              outbuffer.readAll(output, 0, output.length);
+          
+              return new String(output,"UTF-8");
+          }catch(Throwable t){
+              return "Error:"+t.getMessage();
+          }
+           
+                   
+      }
+        
     }
-  }
+
+    static class WorkerThread extends Thread {
+
+        private final HttpService httpservice;
+        private final HttpServerConnection conn;
+
+        public WorkerThread(final HttpService httpservice, final HttpServerConnection conn) {
+            super();
+            this.httpservice = httpservice;
+            this.conn = conn;
+        }
+
+        public void run() {
+            System.out.println("New connection thread");
+            HttpContext context = new BasicHttpContext(null);
+            try {
+                while (!Thread.interrupted() && this.conn.isOpen()) {
+                    this.httpservice.handleRequest(this.conn, context);
+                }
+            } catch (ConnectionClosedException ex) {
+                System.err.println("Client closed connection");
+            } catch (IOException ex) {
+                System.err.println("I/O error: " + ex.getMessage());
+            } catch (HttpException ex) {
+                System.err.println("Unrecoverable HTTP protocol violation: " + ex.getMessage());
+            } finally {
+                try {
+                    this.conn.shutdown();
+                } catch (IOException ignore) {
+                }
+            }
+        }
+
+    }
 
 }
