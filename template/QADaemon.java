@@ -53,9 +53,9 @@ public class QADaemon {
 
   // Note: all classes in the same directory are automatically imported
   public static QAServiceHandler handler;
-  private final ServerSocket serversocket;
-  private final HttpParams params;
-  private final HttpService httpService;
+  private ServerSocket serversocket;
+  private HttpParams params;
+  private HttpService httpService;
 
   public static void main(String [] args) {
     int port = 9091;
@@ -66,9 +66,9 @@ public class QADaemon {
       System.out.println("Using default port: " + port);
     }
 
-    this.serversocket = new ServerSocket(port);
-    this.params = new BasicHttpParams();
-    this.params.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 1000).setIntParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE, 8 * 1024)
+    serversocket = new ServerSocket(port);
+    params = new BasicHttpParams();
+    params.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, 1000).setIntParameter(CoreConnectionPNames.SOCKET_BUFFER_SIZE, 8 * 1024)
             .setBooleanParameter(CoreConnectionPNames.STALE_CONNECTION_CHECK, false).setBooleanParameter(CoreConnectionPNames.TCP_NODELAY, true)
             .setParameter(CoreProtocolPNames.ORIGIN_SERVER, "HttpComponents/1.1");
 
@@ -80,26 +80,26 @@ public class QADaemon {
     reqistry.register("*", new HttpReqHandler());
 
     // Set up the HTTP service
-    this.httpService = new HttpService(httpproc, new NoConnectionReuseStrategy(), new DefaultHttpResponseFactory());
-    this.httpService.setParams(this.params);
-    this.httpService.setHandlerResolver(reqistry);
+    httpService = new HttpService(httpproc, new NoConnectionReuseStrategy(), new DefaultHttpResponseFactory());
+    httpService.setParams(params);
+    httpService.setHandlerResolver(reqistry);
 
     try {
         // Set up HTTP connection
-        Socket socket = this.serversocket.accept();
+        Socket socket = serversocket.accept();
         DefaultHttpServerConnection conn = new DefaultHttpServerConnection();
         System.out.println("Incoming connection from " + socket.getInetAddress());
-        conn.bind(socket, this.params);
+        conn.bind(socket, params);
 
         // Start worker thread
-        Thread t = new WorkerThread(this.httpService, conn);
+        Thread t = new WorkerThread(httpService, conn);
         t.setDaemon(true);
         t.start();
     } catch (InterruptedIOException ex) {
-        break;
+        return;
     } catch (IOException e) {
         System.err.println("I/O error initialising connection thread: " + e.getMessage());
-        break;
+        return;
     }
 
   }
