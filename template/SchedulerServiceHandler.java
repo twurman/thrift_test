@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 // Interface definition
-import edu.umich.clarity.thrift.THostPort;
-import edu.umich.clarity.thrift.SchedulerService;
+import edu.umich.clarity.thrift.*;
+import org.apache.thrift.TException;
 
 /** Implementation of the question-answer interface defined
  * in the question-answer thrift file. A client request to any
@@ -15,19 +15,29 @@ import edu.umich.clarity.thrift.SchedulerService;
  */
 public class SchedulerServiceHandler implements SchedulerService.Iface {
   
-  public SchedulerServiceHandler()
-  {
+	public SchedulerServiceHandler()
+	{
 
-  }
+	}
 
-  /** Echos input */
-  public THostPort consultAddress(String serviceType) throws TException {
-        System.out.print("receive consulting about service " + serviceType);
-        THostPort hostPort = new THostPort();
-        hostPort.ip = "clarity04.eecs.umich.edu";
-        hostPort.port = 4200;
-        return hostPort;
-    }
+	@Override
+	public THostPort consultAddress(String serviceType) throws TException {
+	    System.out.print("receive consulting about service " + serviceType);
+	    THostPort hostPort = new THostPort();
+	    hostPort.ip = "clarity04.eecs.umich.edu";
+	    hostPort.port = 4200;
+	    return hostPort;
+	}
+
+	@Override
+	public void registerBackend(RegMessage message) throws TException {
+
+	}
+
+	@Override
+	public void updateLatencyStat(String name, LatencyStat latencyStat) throws TException {
+
+	}
 
 }
 
