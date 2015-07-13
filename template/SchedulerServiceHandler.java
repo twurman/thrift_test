@@ -1,12 +1,11 @@
 // This handler implements the services provided to the client.
-package edu.umich.clarity.thrift;
 
 // Java packages
 import java.util.List;
 import java.util.ArrayList;
 
 // Interface definition
-import edu.umich.clarity.thrift.QAService;
+import edu.umich.clarity.thrift.SchedulerService;
 
 /** Implementation of the question-answer interface defined
  * in the question-answer thrift file. A client request to any
