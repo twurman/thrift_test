@@ -57,7 +57,7 @@ public class CommandCenterDaemon {
   private static ServerSocket serversocket;
   private static HttpParams params;
   private static HttpService httpService;
-  private int reqCount = 0;
+  private static int reqCount = 0;
 
   public static void main(String [] args) {
     int port = 9091;
