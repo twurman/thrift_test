@@ -114,7 +114,7 @@ public class CommandCenterDaemon {
           super();
       }
 
-      public void handle(final HttpRequest request, final HttpResponse response, final HttpContext context) throws HttpException, IOException, InterruptedException {
+      public void handle(final HttpRequest request, final HttpResponse response, final HttpContext context) throws HttpException, IOException {
 
           String method = request.getRequestLine().getMethod().toUpperCase(Locale.ENGLISH);
           if (!method.equals("GET") && !method.equals("HEAD") && !method.equals("POST")) {
@@ -128,8 +128,7 @@ public class CommandCenterDaemon {
               System.out.println("Incoming content: " + new String(entityContent));
               
               final String output = this.thriftRequest(entityContent);
-              Thread.sleep(1); 
-              
+
               System.out.println("Outgoing content: "+output);
               
               EntityTemplate body = new EntityTemplate(new ContentProducer() {
@@ -185,10 +184,11 @@ public class CommandCenterDaemon {
             this.conn = conn;
         }
 
-        public void run() {
+        public void run() throws InterruptedException {
             System.out.println("New connection thread");
             HttpContext context = new BasicHttpContext(null);
             try {
+                Thread.sleep(1); 
                 while (!Thread.interrupted() && this.conn.isOpen()) {   
                   System.out.println("handling request");
                   this.httpservice.handleRequest(this.conn, context);
