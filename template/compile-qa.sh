@@ -17,6 +17,7 @@ printdivision()
 echo -e "./compile-qa.sh: `pwd`"
 echo -e "./compile-qa.sh: Compiling thrift source code..."
 thrift --gen java qaservice.thrift
+thrift -r --gen java service.thrift
 printdivision
 
 thrift=~/thrift-0.9.2
@@ -32,4 +33,4 @@ javac -cp $JAVA_CLASS_PATH QADaemonSimple.java QAServiceHandler.java gen-java/ed
 
 printdivision
 echo -e "javac -cp $JAVA_CLASS_PATH CommandCenterDaemon.java SchedulerServiceHandler.java gen-java/edu/umich/clarity/thrift/SchedulerService.java\n\n"
-javac -cp $JAVA_CLASS_PATH CommandCenterDaemon.java SchedulerServiceHandler.java gen-java/edu/umich/clarity/thrift/SchedulerService.java
+javac -cp $JAVA_CLASS_PATH CommandCenterDaemon.java SchedulerServiceHandler.java gen-java/edu/umich/clarity/thrift/SchedulerService.java gen-java/edu/umich/clarity/thrift/THostPort.java gen-java/edu/umich/clarity/thrift/RegMessage.java gen-java/edu/umich/clarity/thrift/QuerySpec.java gen-java/edu/umich/clarity/thrift/QueryInput.java gen-java/edu/umich/clarity/thrift/LatencyStat.java
