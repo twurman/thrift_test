@@ -188,7 +188,8 @@ public class CommandCenterDaemon {
             System.out.println("New connection thread");
             HttpContext context = new BasicHttpContext(null);
             try {
-                while (!Thread.interrupted() && this.conn.isOpen()) {    
+                while (!Thread.interrupted() && this.conn.isOpen()) { 
+                  Thread.sleep(1);   
                   System.out.println("handling request");
                   this.httpservice.handleRequest(this.conn, context);
                 }
