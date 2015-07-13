@@ -29,3 +29,7 @@ javac -cp $JAVA_CLASS_PATH -Xlint:unchecked -Xlint:deprecation QADaemon.java QAS
 printdivision
 echo -e "javac -cp $JAVA_CLASS_PATH QADaemonSimple.java QAServiceHandler.java gen-java/edu/umich/clarity/thrift/QAService.java\n\n"
 javac -cp $JAVA_CLASS_PATH QADaemonSimple.java QAServiceHandler.java gen-java/edu/umich/clarity/thrift/QAService.java
+
+printdivision
+echo -e "javac -cp $JAVA_CLASS_PATH CommandCenterDaemon.java SchedulerServiceHandler.java gen-java/edu/umich/clarity/thrift/SchedulerService.java\n\n"
+javac -cp $JAVA_CLASS_PATH CommandCenterDaemon.java SchedulerServiceHandler.java gen-java/edu/umich/clarity/thrift/SchedulerService.java
