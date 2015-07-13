@@ -5,7 +5,7 @@ import org.apache.thrift.server.TServer.Args;
 import org.apache.thrift.server.TSimpleServer;
 
 // Generated code
-import qastubs.QAService;
+import edu.umich.clarity.thrift.QAService;
 
 public class QADaemonSimple {
 
