@@ -1,4 +1,5 @@
 // This handler implements the services provided to the client.
+package edu.umich.clarity.thrift;
 
 // Java packages
 import java.util.List;
