@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 // Interface definition
-import qastubs.QAService;
+import edu.umich.clarity.thrift.QAService;
 
 /** Implementation of the question-answer interface defined
  * in the question-answer thrift file. A client request to any
