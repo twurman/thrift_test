@@ -23,9 +23,9 @@ thrift=~/thrift-0.9.2
 JAVA_CLASS_PATH=$thrift/lib/java/build/libthrift-0.9.2.jar:$thrift/lib/java/build/lib/slf4j-api-1.5.8.jar:$thrift/lib/java/build/lib/slf4j-log4j12-1.5.8.jar:$thrift/lib/java/build/lib/log4j-1.2.14.jar:httpcomponents-core/lib/httpcore-4.4.1.jar
 
 # Use cp flag to avoid cluttering up the CLASSPATH environment variable
-echo -e "javac -cp $JAVA_CLASS_PATH QADaemon.java QAServiceHandler.java gen-java/qastubs/QAService.java\n\n"
-javac -cp $JAVA_CLASS_PATH -Xlint:unchecked -Xlint:deprecation QADaemon.java QAServiceHandler.java gen-java/qastubs/QAService.java
+echo -e "javac -cp $JAVA_CLASS_PATH QADaemon.java QAServiceHandler.java gen-java/edu/umich/clarity/thrift/QAService.java\n\n"
+javac -cp $JAVA_CLASS_PATH -Xlint:unchecked -Xlint:deprecation QADaemon.java QAServiceHandler.java gen-java/edu/umich/clarity/thrift/QAService.java
 
 printdivision
-echo -e "javac -cp $JAVA_CLASS_PATH QADaemonSimple.java QAServiceHandler.java gen-java/qastubs/QAService.java\n\n"
-javac -cp $JAVA_CLASS_PATH QADaemonSimple.java QAServiceHandler.java gen-java/qastubs/QAService.java
+echo -e "javac -cp $JAVA_CLASS_PATH QADaemonSimple.java QAServiceHandler.java gen-java/edu/umich/clarity/thrift/QAService.java\n\n"
+javac -cp $JAVA_CLASS_PATH QADaemonSimple.java QAServiceHandler.java gen-java/edu/umich/clarity/thrift/QAService.java
