@@ -114,7 +114,7 @@ public class CommandCenterDaemon {
           super();
       }
 
-      public void handle(final HttpRequest request, final HttpResponse response, final HttpContext context) throws HttpException, IOException {
+      public void handle(final HttpRequest request, final HttpResponse response, final HttpContext context) throws HttpException, IOException, InterruptedException {
 
           String method = request.getRequestLine().getMethod().toUpperCase(Locale.ENGLISH);
           if (!method.equals("GET") && !method.equals("HEAD") && !method.equals("POST")) {
@@ -184,11 +184,10 @@ public class CommandCenterDaemon {
             this.conn = conn;
         }
 
-        public void run() throws InterruptedException {
+        public void run() {
             System.out.println("New connection thread");
             HttpContext context = new BasicHttpContext(null);
             try {
-                Thread.sleep(1); 
                 while (!Thread.interrupted() && this.conn.isOpen()) {   
                   System.out.println("handling request");
                   this.httpservice.handleRequest(this.conn, context);
