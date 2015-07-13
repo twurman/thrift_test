@@ -188,9 +188,9 @@ public class CommandCenterDaemon {
             System.out.println("New connection thread");
             HttpContext context = new BasicHttpContext(null);
             try {
-                while (!Thread.interrupted() && this.conn.isOpen()) {
-                    System.out.println("handling request");
-                    this.httpservice.handleRequest(this.conn, context);
+                while (!Thread.interrupted() && this.conn.isOpen()) {    
+                  System.out.println("handling request");
+                  this.httpservice.handleRequest(this.conn, context);
                 }
             } catch (ConnectionClosedException ex) {
                 System.err.println("Client closed connection");
