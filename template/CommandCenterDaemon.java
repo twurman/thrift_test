@@ -169,7 +169,7 @@ public class CommandCenterDaemon {
               TProtocol  inprotocol   = new TJSONProtocol(inbuffer);                   
               
               //delay random amount of time
-              for(int i = 0; i < randInt(0, 10); i++) {
+              for(int i = 0; i < randInt(0, 10) * 10; i++) {
                 //stall
               }
 
