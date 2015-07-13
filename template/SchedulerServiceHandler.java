@@ -5,10 +5,6 @@ import java.util.List;
 import java.util.ArrayList;
 
 // Interface definition
-import edu.umich.clarity.thrift.LatencyStat;
-import edu.umich.clarity.thrift.QueryInput;
-import edu.umich.clarity.thrift.QuerySpec;
-import edu.umich.clarity.thrift.RegMessage;
 import edu.umich.clarity.thrift.THostPort;
 import edu.umich.clarity.thrift.SchedulerService;
 
@@ -26,7 +22,7 @@ public class SchedulerServiceHandler implements SchedulerService.Iface {
 
   /** Echos input */
   public THostPort consultAddress(String serviceType) throws TException {
-        LOG.info("receive consulting about service " + serviceType);
+        System.out.print("receive consulting about service " + serviceType);
         THostPort hostPort = new THostPort();
         hostPort.ip = "clarity04.eecs.umich.edu";
         hostPort.port = 4200;
