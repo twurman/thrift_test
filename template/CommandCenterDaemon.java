@@ -45,6 +45,7 @@ import edu.umich.clarity.thrift.SchedulerService;
 
 //utils
 import java.util.HashMap;
+import java.util.Random;
 
 /**
  * Starts the question-answer server and listens for requests.
@@ -56,6 +57,7 @@ public class CommandCenterDaemon {
   private static ServerSocket serversocket;
   private static HttpParams params;
   private static HttpService httpService;
+  private int reqCount = 0;
 
   public static void main(String [] args) {
     int port = 9091;
@@ -108,6 +110,19 @@ public class CommandCenterDaemon {
 
   }
 
+  public static int randInt(int min, int max) {
+
+      // NOTE: Usually this should be a field rather than a method
+      // variable so that it is not re-seeded every call.
+      Random rand = new Random();
+
+      // nextInt is normally exclusive of the top value,
+      // so add 1 to make it inclusive
+      int randomNum = rand.nextInt((max - min) + 1) + min;
+
+      return randomNum;
+  }
+
   static class HttpReqHandler implements HttpRequestHandler {
 
       public HttpReqHandler() {
@@ -147,12 +162,17 @@ public class CommandCenterDaemon {
       
       private String thriftRequest(byte[] input){
           try{
-              System.out.println("Thrift request");
+              int reqNum = reqCount++;
               //Input
               TMemoryBuffer inbuffer = new TMemoryBuffer(input.length);           
               inbuffer.write(input);              
               TProtocol  inprotocol   = new TJSONProtocol(inbuffer);                   
               
+              //delay random amount of time
+              for(int i = 0; i < randInt(0, 10); i++) {
+                //stall
+              }
+
               //Output
               TMemoryBuffer outbuffer = new TMemoryBuffer(100);           
               TProtocol outprotocol   = new TJSONProtocol(outbuffer);
@@ -162,6 +182,7 @@ public class CommandCenterDaemon {
               
               byte[] output = new byte[outbuffer.length()];
               outbuffer.readAll(output, 0, output.length);
+              System.out.println("Thrift request number: " + reqNum);
           
               return new String(output,"UTF-8");
           }catch(Throwable t){
