@@ -41,7 +41,7 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TMemoryBuffer;
 
 // Generated code
-import qastubs.QAService;
+import edu.umich.clarity.thrift.QAService;
 
 //utils
 import java.util.HashMap;
