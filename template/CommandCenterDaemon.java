@@ -142,7 +142,12 @@ public class CommandCenterDaemon {
               byte[] entityContent = EntityUtils.toByteArray(entity);
               System.out.println("Incoming content: " + new String(entityContent));
               
-              final String output = this.thriftRequest(entityContent);
+              try {
+                final String output = this.thriftRequest(entityContent);
+              } catch(InterruptedException e) {
+                
+              }
+              
 
               System.out.println("Outgoing content: "+output);
               
