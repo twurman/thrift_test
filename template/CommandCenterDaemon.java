@@ -160,7 +160,7 @@ public class CommandCenterDaemon {
           }
       }
       
-      private String thriftRequest(byte[] input){
+      private String thriftRequest(byte[] input) throws InterruptedException{
           try{
               int reqNum = reqCount++;
               //Input
@@ -169,9 +169,11 @@ public class CommandCenterDaemon {
               TProtocol  inprotocol   = new TJSONProtocol(inbuffer);                   
               
               //delay random amount of time
-              for(int i = 0; i < randInt(0, 10) * 10; i++) {
-                //stall
-              }
+              Thread.sleep(randInt(0, 10) * 10);
+
+              // for(int i = 0; i < randInt(0, 10) * 10; i++) {
+              //   //stall
+              // }
 
               //Output
               TMemoryBuffer outbuffer = new TMemoryBuffer(100);           

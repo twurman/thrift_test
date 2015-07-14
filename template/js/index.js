@@ -29,8 +29,8 @@ function sendRequest() {
     response = client.submitRequest("Sirius");
 }
 
+var asyncCall;
 function getHostPort() {
-    numRuns++;
     var addr = getAddress(ip, port, 'cc');
     var transport = new Thrift.TXHRTransport(addr);
     var protocol  = new Thrift.TJSONProtocol(transport);
@@ -38,16 +38,16 @@ function getHostPort() {
     var response = client.consultAddress("Sirius");
     var msg = "Host: " + response.ip + ", Port: " + response.port;
     updateResponseDiv(msg);
+    numRuns++;
     console.log(numRuns);
+    if(numRuns > 10) {
+        window.clearTimeout(asyncCall);
+    }
 }
 document.getElementById("getHostPort").addEventListener("click",getHostPort);
 
 function asyncTest() {
-    var asyncCall = setTimeout(function() { getHostPort(); }, 1);
-    while(numRuns < 10) {
-        //do nothing
-    }
-    clearTimout(asyncCall);
+    var asyncCall = window.setTimeout(function() { getHostPort(); }, 5);
 }
 document.getElementById("asyncTest").addEventListener("click",asyncTest);
 
