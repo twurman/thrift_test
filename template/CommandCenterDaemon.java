@@ -157,7 +157,7 @@ public class CommandCenterDaemon {
                 });
                 body.setContentType("text/html; charset=UTF-8");
                 response.setEntity(body);
-                
+
               } catch(InterruptedException e) {
 
               }
@@ -176,7 +176,9 @@ public class CommandCenterDaemon {
               TProtocol  inprotocol   = new TJSONProtocol(inbuffer);                   
               
               //delay random amount of time
-              Thread.sleep(randInt(0, 10) * 10);
+              int sleepTime = randInt(0, 10) * 10;
+              System.out.println("Thread " + reqNum + " sleeping for " + sleepTime);
+              Thread.sleep(sleepTime);
 
               // for(int i = 0; i < randInt(0, 10) * 10; i++) {
               //   //stall
