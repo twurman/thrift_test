@@ -176,7 +176,7 @@ public class CommandCenterDaemon {
               TProtocol  inprotocol   = new TJSONProtocol(inbuffer);                   
               
               //delay random amount of time
-              int sleepTime = randInt(0, 10) * 10;
+              int sleepTime = randInt(0, 10) * 1000;
               System.out.println("Thread " + reqNum + " sleeping for " + sleepTime);
               Thread.sleep(sleepTime);
 
