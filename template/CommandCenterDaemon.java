@@ -92,13 +92,14 @@ public class CommandCenterDaemon {
           // Set up HTTP connection
           Socket socket = serversocket.accept();
           DefaultHttpServerConnection conn = new DefaultHttpServerConnection();
-          System.out.println("Incoming connection from " + socket.getInetAddress());
+          // System.out.println("Incoming connection from " + socket.getInetAddress());
           conn.bind(socket, params);
 
           // Start worker thread
           Thread t = new WorkerThread(httpService, conn);
           t.setDaemon(true);
           t.start();
+          System.out.println("WorkerThread started");
         }
         
     } catch (InterruptedIOException ex) {

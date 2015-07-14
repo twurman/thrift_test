@@ -22,7 +22,7 @@ public class SchedulerServiceHandler implements SchedulerService.Iface {
 
 	@Override
 	public THostPort consultAddress(String serviceType) throws TException {
-	    System.out.println("receive consulting about service " + serviceType);
+	    // System.out.println("receive consulting about service " + serviceType);
 	    THostPort hostPort = new THostPort();
 	    hostPort.ip = "clarity04.eecs.umich.edu";
 	    hostPort.port = 4200;

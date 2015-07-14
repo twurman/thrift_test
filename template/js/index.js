@@ -31,6 +31,7 @@ function sendRequest() {
 
 var asyncCall;
 function getHostPort() {
+    console.log("Getting host port");
     var addr = getAddress(ip, port, 'cc');
     var transport = new Thrift.TXHRTransport(addr);
     var protocol  = new Thrift.TJSONProtocol(transport);
@@ -41,13 +42,15 @@ function getHostPort() {
     numRuns++;
     console.log(numRuns);
     if(numRuns > 10) {
-        window.clearTimeout(asyncCall);
+        console.log("Done with asyncTest");
+        window.clearInterval(asyncCall);
     }
 }
 document.getElementById("getHostPort").addEventListener("click",getHostPort);
 
 function asyncTest() {
-    var asyncCall = window.setTimeout(function() { getHostPort(); }, 5);
+    asyncCall = window.setInterval(getHostPort, 100);
+    console.log("Started asyncTest");
 }
 document.getElementById("asyncTest").addEventListener("click",asyncTest);
 
