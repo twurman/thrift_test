@@ -137,7 +137,7 @@ public class CommandCenterDaemon {
           }
           String target = request.getRequestLine().getUri();
 
-          if (request instanceof HttpEntityEnclosingRequest && target.equals("/test")) {
+          if (request instanceof HttpEntityEnclosingRequest && target.equals("/cc")) {
               HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
               byte[] entityContent = EntityUtils.toByteArray(entity);
               System.out.println("Incoming content: " + new String(entityContent));
@@ -169,7 +169,7 @@ public class CommandCenterDaemon {
               TProtocol  inprotocol   = new TJSONProtocol(inbuffer);                   
               
               //delay random amount of time
-              for(int i = 0; i < randInt(0, 10) * 100; i++) {
+              for(int i = 0; i < randInt(0, 10) * 10; i++) {
                 //stall
               }
 
