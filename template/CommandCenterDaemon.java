@@ -141,28 +141,29 @@ public class CommandCenterDaemon {
               HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
               byte[] entityContent = EntityUtils.toByteArray(entity);
               System.out.println("Incoming content: " + new String(entityContent));
-              
-              final String output = "";
+
               try {
-                output = this.thriftRequest(entityContent);
+                final String output = this.thriftRequest(entityContent);
+                System.out.println("Outgoing content: "+output);
+                
+                EntityTemplate body = new EntityTemplate(new ContentProducer() {
+
+                    public void writeTo(final OutputStream outstream) throws IOException {
+                        OutputStreamWriter writer = new OutputStreamWriter(outstream, "UTF-8");
+                        writer.write(output);
+                        writer.flush();
+                    }
+
+                });
+                body.setContentType("text/html; charset=UTF-8");
+                response.setEntity(body);
+                
               } catch(InterruptedException e) {
 
               }
               
 
-              System.out.println("Outgoing content: "+output);
               
-              EntityTemplate body = new EntityTemplate(new ContentProducer() {
-
-                  public void writeTo(final OutputStream outstream) throws IOException {
-                      OutputStreamWriter writer = new OutputStreamWriter(outstream, "UTF-8");
-                      writer.write(output);
-                      writer.flush();
-                  }
-
-              });
-              body.setContentType("text/html; charset=UTF-8");
-              response.setEntity(body);
           }
       }
       
